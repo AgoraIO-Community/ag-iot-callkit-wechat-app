@@ -1,0 +1,8 @@
+{
+  "pageOrientation": "auto",
+  "usingComponents": {
+    "wux-card": "wux-weapp/card/index",
+    "wux-wing-blank": "wux-weapp/wing-blank/index"
+    
+  }
+}

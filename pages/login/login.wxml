@@ -1,0 +1,17 @@
+<!--index.wxml-->
+<view class=" agora-bg">
+  <view class="content flex-center-column">
+    <view class="logo-section flex-center-column">
+      <image class="logo" style="width: 300rpx; height: 200rpx;" mode="aspectFit" src="../../images/logo.png"></image>
+    </view>
+    <form bindsubmit="onSubmit">
+      <view class="form-section flex-center-column">
+        <view class="inputWrapper">
+          <input name="username" placeholder-style='color:#A3D1E0' class="channelInput" 
+          value="{{username}}" placeholder='请输入账号' />
+        </view>
+        <button plain="true" id="login" form-type="submit" class="joinBtn">登陆</button>
+      </view>
+    </form>
+  </view>
+</view>

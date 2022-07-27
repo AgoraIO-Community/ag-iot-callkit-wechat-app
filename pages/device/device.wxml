@@ -1,0 +1,10 @@
+<view>
+    <view class="box box-column" style="margin-bottom:64px;">
+        <text style="margin-bottom: 16px;">当前账号: {{userData.userId}}</text>
+        <text>账号ID: {{userData.clientId}}</text>
+    </view>
+    <view class="box flex-center-column">
+        <input class="input" placeholder="请输入对端设备ID" maxlength="64" bindinput="deviceIdInput" />
+        <button type="default" class="call-device-button" bindtap="callOnClick">呼叫设备</button>
+    </view>
+</view>

@@ -1,0 +1,15 @@
+<view>
+    <view class="flex-center-column content">
+        <text>{{name}}</text>
+        <text>等待您接听</text>
+        <text>附带消息：{{attachMsg}}</text>
+    </view>
+    <view class="flex-center-row content">
+        <live-player src="{{playUrl}}" mode="RTC" autoplay bindstatechange="statechange" binderror="error" style="width: 225px; height: 225px;" />
+    </view>
+
+    <view class="flex-center-row content">
+        <button type="default" bindtap="onAccept">接听</button>
+        <button type="default" bindtap="onHangup">挂断</button>
+    </view>
+</view>

@@ -1,0 +1,2 @@
+
+<button type="default" bindtap="onLoginOut">登出</button>

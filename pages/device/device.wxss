@@ -1,0 +1,69 @@
+@import "../../common.wxss";
+
+.page-section-spacing {
+  margin-top: 30px;
+}
+
+.scroll-view-item {
+  height: 150px;
+}
+
+.scroll-view-item_H {
+  display: inline-block;
+  width: 100%;
+  height: 150px;
+}
+
+.weui-cells {
+  margin-top: 8px;
+  background-color: #FFF;
+  line-height: 1.41176471;
+  font-size: 17px;
+  overflow: hidden;
+  position: relative
+}
+
+.item {
+  width: 100%;
+  height: 50px;
+}
+
+.input {
+    padding: 6px;
+    border: 1px solid gray;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    min-width: 240px;
+}
+
+.call-device-button {
+    padding: 6px;
+    min-width: 64px;
+}
+
+.card-container {
+    min-height: 40vh;
+    display:flex;
+    flex-direction:row;
+    flex-wrap:wrap;
+    justify-content: left;
+    align-items: start;
+    align-content: start;
+}
+
+.card {
+    min-width: 100%;
+    min-height: 200rpx;
+    margin-bottom: 32rpx;
+}
+
+.card-button-group {
+    display: flex;
+    width: 100%;
+    margin: 24rpx 0;
+}
+
+.box-column {
+  display: flex;
+  flex-direction: column;
+}

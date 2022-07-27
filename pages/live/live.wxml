@@ -1,0 +1,12 @@
+<view>
+    <view class="box flex-center-row">
+        <live-player src="{{playUrl}}" mode="RTC" autoplay bindstatechange="statechange" binderror="error" style="width: 225px; height: 225px;" />
+    </view>
+    <view class="box flex-center-row">
+        <live-pusher url="{{pushUrl}}" mode="RTC" autopush bindstatechange="statechange" style="width: 225px; height: 225px;" />
+    </view>
+
+    <view class="box flex-center-row">
+        <button type="default" size="mini" bindtap="onHangup">挂断</button>
+    </view>
+</view>

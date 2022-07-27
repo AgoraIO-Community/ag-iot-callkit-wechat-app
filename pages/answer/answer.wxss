@@ -1,0 +1,5 @@
+@import "../../common.wxss";
+
+.content {
+    margin-top: 30px;
+}
