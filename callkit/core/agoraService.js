@@ -22,14 +22,14 @@
  *
  */
 
-import { getIotClient } from './action';
-import { log, myRequest } from '../common/utils';
+import { getIotClient } from './index';
+import { log, myRequest } from '../utils/index';
 import {
     agoraBaseUrl,
     agoraBaseAuthUrl,
     CLIENT_ID,
     CLIENT_SECRET,
-} from '../common/config';
+} from '../utils/config';
 
 export async function anonymousLogin(username) {
     log.i('anonymousLogin Invoked');

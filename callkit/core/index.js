@@ -25,15 +25,15 @@
 import { connect } from '../lib/mqtt/mqtt@4.1.0.min';
 import { getInventDeviceNameService } from './granwinService';
 import IoTClient from './IoTClient';
-import aws4Sign from '../aws/aws4Sign';
-import { destroyRtc } from '../rtc/action';
-import { log } from '../common/utils';
-import eventBus from '../common/event-bus';
+import aws4Sign from '../aws/index';
+import { destroyRtc } from '../rtc/index';
+import { log } from '../utils/index';
+import eventBus from '../utils/event-bus';
 import {
     USER_SESSION_END_EVENT,
     MQTT_DISCONNECTED,
     MQTT_RECONNECTED,
-} from '../common/const';
+} from '../utils/const';
 
 let mqttClient;
 let iotClient;

@@ -26,7 +26,7 @@ import {
     initIot,
     getIotClient,
     destroyMqtt,
-} from './iotapaas/action';
+} from './core/index';
 import {
     joinChannel,
     userPublishStream,
@@ -36,16 +36,18 @@ import {
     muteLocalAudio,
     mutePeerVideo,
     mutePeerAudio,
-} from './rtc/action';
+    setAudioCodec,
+    getAudioCodec,
+} from './rtc/index';
 import {
     anonymousLogin,
     agoraGetToken,
     callDeviceService,
     answerDeviceService,
     agoraRefreshToken,
-} from './iotapaas/agoraService';
-import { base32Encode, log } from './common/utils';
-import eventBus from './common/event-bus';
+} from './core/agoraService';
+import { base32Encode, log } from './utils/index';
+import eventBus from './utils/event-bus';
 import {
     PEER_STREAM_ADDED_EVENT,
     PEER_HANGUP_EVENT,
@@ -55,7 +57,7 @@ import {
     USER_SESSION_END_EVENT,
     MQTT_RECONNECTED,
     MQTT_DISCONNECTED,
-} from './common/const';
+} from './utils/const';
 
 const CALLKIT_STATE_IDLE = 1; // < 当前 空闲状态无通话
 const CALLKIT_STATE_DIALING = 2; // < 正在呼叫设备中
@@ -262,7 +264,7 @@ function processAwsMessage(jsonState) {
                 currentState = CALLKIT_STATE_TALKING; // 切换到通话
                 peerAcceptAction(); // 对端接听事件处理
             } else if (currentState === CALLKIT_STATE_IDLE) {
-                log.e('shadow stucked in talking state');
+                log.e('shadow stuck in talking state, force to hangup');
                 setCallkitContext(jsonState);
                 forceHangupAction(); // 从空闲跳到通话状态，可能影子状态卡在通话中，需要强制中断
             } else {
@@ -274,7 +276,7 @@ function processAwsMessage(jsonState) {
                 currentState = CALLKIT_STATE_TALKING; // 切换到通话
                 localAcceptAction(); // 本地接听事件处理
             } else if (currentState === CALLKIT_STATE_IDLE) {
-                log.e('shadow stucked in talking state');
+                log.e('shadow stuck in talking state, force to hangup');
                 setCallkitContext(jsonState);
                 forceHangupAction(); // 从空闲跳到通话状态，可能影子状态卡在通话中，需要强制中断
             } else {
@@ -347,13 +349,18 @@ async function refreshAuthTokenIfExpired(iotClient) {
     }
 }
 
-async function callDevice(deviceMac, msg) {
+async function callDevice(deviceId, msg) {
     try {
         if (currentState !== CALLKIT_STATE_IDLE) return;
+        if (!deviceId) {
+            log.e('请提供 deviceId');
+            return;
+        }
+
         const iotClient = getIotClient();
         await refreshAuthTokenIfExpired(iotClient);
         const { inventDeviceName, accessToken, productKey } = iotClient;
-        const calleeId = getCalleeId(deviceMac, productKey);
+        const calleeId = getCalleeId(deviceId, productKey);
 
         const callRes = await callDeviceService(inventDeviceName, calleeId, msg, accessToken);
         const newContext = { ...callRes, callerId: inventDeviceName, calleeId };
@@ -422,6 +429,14 @@ function mutePeerAudioHelper(mute) {
     mutePeerAudio(uid, mute);
 }
 
+function setAudioCodecHelper(audioCodec) {
+    setAudioCodec(audioCodec);
+}
+
+function getAudioCodecHelper() {
+    return getAudioCodec();
+}
+
 async function initAndLogin(config, userId) {
     try {
         if (!config.APPID) {
@@ -436,6 +451,9 @@ async function initAndLogin(config, userId) {
         if (!userId) {
             throw new Error('用户名不能为空');
         }
+        if (typeof userId !== 'string') {
+            throw new Error('用户名类型需要是字符串');
+        }
         if (userId.length < 6) {
             throw new Error('用户名需要至少6位');
         }
@@ -445,6 +463,7 @@ async function initAndLogin(config, userId) {
         const agoraTokenRes = await agoraGetToken(username);
         return await initIot(config, username, anonymousRes.info, agoraTokenRes, handleMqttMessage);
     } catch (err) {
+        log.e('initAndLogin failed', err);
         throw err;
     }
 }
@@ -588,6 +607,10 @@ class CallkitManager {
     mutePeerVideo = mutePeerVideoHelper;
 
     mutePeerAudio = mutePeerAudioHelper;
+
+    setAudioCodec = setAudioCodecHelper;
+
+    getAudioCodec = getAudioCodecHelper;
 
     peerStreamAddedEventCallback = peerStreamAddedEventCallback;
 

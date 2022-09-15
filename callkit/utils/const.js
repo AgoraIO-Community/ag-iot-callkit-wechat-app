@@ -41,3 +41,8 @@ export const MQTT_RECONNECTED = 200010; // mqtt reconnected event
 export const MQTT_DISCONNECTED = 200011; // mqtt disconnected event
 
 export const GRANWIN_SERVICE_UNAUTH = 10006; // 未登录或登录失效
+
+export const PACKET_TYPE_PCMU = 0;
+export const PACKET_TYPE_PCMA = 8;
+export const PACKET_TYPE_G722 = 9;
+export const PACKET_TYPE_OPUS = 120;

@@ -16,7 +16,7 @@ Page({
     onLoad(options) {
         wx.showLoading({
             title: '正在拉取流',
-            mask: true,
+            mask: false,
         });
 
         // peer加入频道，获得播放地址

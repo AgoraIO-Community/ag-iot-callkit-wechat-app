@@ -22,8 +22,8 @@
  *
  */
 
-import { log, myRequest } from '../common/utils';
-import { granwinServiceBase } from '../common/config';
+import { log, myRequest } from '../utils/index';
+import { granwinServiceBase } from '../utils/config';
 
 export async function granwinUserLogin(email, password) {
     log.i('granwinUserLogin Invoked');

@@ -6,13 +6,18 @@ const order = ['demo1', 'demo2', 'demo3'];
 Page({
     data: {
         userData: {},
+        currentAudioCodec: '',
         deviceId: '',
     },
 
     onShow() {
+        const currentAudioCodec = CallKitSDK.getCallkitManager().getAudioCodec()
+        const userData = CallKitSDK.getAccountManager().getUserData()
+
         // 获取当前用户信息，显示用户信息
         this.setData({
-            userData: CallKitSDK.getAccountManager().getUserData(),
+            userData,
+            currentAudioCodec,
         });
     },
 
@@ -72,6 +77,20 @@ Page({
         });
     },
 
+    setAudioCodecG711u() {
+        CallKitSDK.getCallkitManager().setAudioCodec('g711u')
+        this.setData({
+            currentAudioCodec: 'g711u',
+        });
+    },
+
+    setAudioCodecG722() {
+        CallKitSDK.getCallkitManager().setAudioCodec('g722')
+        this.setData({
+            currentAudioCodec: 'g722',
+        });
+    },
+
     callOnClick(event) {
         const { deviceId } = this.data;
         const attachMsg = 'Hello world from wechat.';
@@ -86,7 +105,7 @@ Page({
 
         wx.showLoading({
             title: '正在呼叫',
-            mask: true,
+            mask: false,
         });
 
         CallKitSDK.getCallkitManager().callDevice(deviceId, attachMsg)

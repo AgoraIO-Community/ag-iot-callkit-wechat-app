@@ -23,7 +23,7 @@ Page({
 
         wx.showLoading({
             title: '正在登陆中',
-            mask: true,
+            mask: false,
         });
 
         // 用户登陆，并且建立mqtt连接
