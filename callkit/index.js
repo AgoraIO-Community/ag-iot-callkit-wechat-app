@@ -70,17 +70,20 @@ const REASON_LOCAL_HANGUP = 1; // < 本地挂断
 const REASON_LOCAL_ANSWER = 2; // < 本地应答
 const REASON_PEER_HANGUP = 3; // < 对端挂断
 const REASON_PEER_ANSWER = 4; // < 对端应答
-const REASON_CALL_TIMEOUT = 5; // < 呼叫超时
+const REASON_PEER_CALL_TIMEOUT = 5; // < 对端应答超时
+const REASON_LOCAL_CALL_TIMEOUT = 7; // < 本地应答超时
 
 /*
     local call -> local hangup
     local call -> peer hangup
+    local call -> peer busy
     local call -> peer answer -> local hangup
     local call -> peer answer -> peer hangup
     local call -> no answer
 
     peer call -> peer hangup
     peer call -> local hangup
+    peer call -> local busy
     peer call -> local answer -> peer hangup
     peer call -> local answer -> local hangup
     peer call -> no answer
@@ -219,12 +222,20 @@ function processAwsMessage(jsonState) {
             } else {
                 log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
             }
-        } else if (reason === REASON_CALL_TIMEOUT) {
+        } else if (reason === REASON_PEER_CALL_TIMEOUT) {
             if (currentState === CALLKIT_STATE_DIALING) { // 主叫过程中，对端超时无响应
                 log.i('call timeout during dialing');
                 currentState = CALLKIT_STATE_IDLE; // 结束通话
                 peerBusyAction(); // 对端无响应事件处理
             } else if (currentState === CALLKIT_STATE_INCOMING) { // 被叫过程中，被叫无响应
+                log.i('call timeout during incoming');
+                currentState = CALLKIT_STATE_IDLE; // 结束通话
+                localBusyAction(); // 本地无响应事件处理
+            } else {
+                log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+            }
+        } else if (reason === REASON_LOCAL_CALL_TIMEOUT) {
+            if (currentState === CALLKIT_STATE_INCOMING) { // 被叫过程中，被叫无响应
                 log.i('call timeout during incoming');
                 currentState = CALLKIT_STATE_IDLE; // 结束通话
                 localBusyAction(); // 本地无响应事件处理

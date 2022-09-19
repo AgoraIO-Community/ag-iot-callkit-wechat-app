@@ -88,6 +88,7 @@ Page({
      */
     onUnload() {
         this.peerHangupEventCallbackUnsubscribe();
+        this.peerStreamAddedEventCallbackUnsubscribe();
     },
 
     /**

@@ -185,16 +185,14 @@ export function muteLocal(isMuted) {
     if (isMuted) {
         rtcClient.muteLocal('all', () => {
             log.i('muteLocal success');
-            rtcClient = null;
         }, (err) => {
             log.e('muteLocal failed', err);
         });
     } else {
         rtcClient.unmuteLocal('all', () => {
-            log.i('muteLocal success');
-            rtcClient = null;
+            log.i('unmuteLocal success');
         }, (err) => {
-            log.e('muteLocal failed', err);
+            log.e('unmuteLocal failed', err);
         });
     }
 }
@@ -209,16 +207,14 @@ export function muteRemote(uid, isMuted) {
     if (isMuted) {
         rtcClient.mute(parsedInt, 'all', () => {
             log.i('muteRemote success');
-            rtcClient = null;
         }, (err) => {
             log.e('muteRemote failed', err);
         });
     } else {
         rtcClient.unmute(parsedInt, 'all', () => {
-            log.i('muteRemote success');
-            rtcClient = null;
+            log.i('unmuteRemote success');
         }, (err) => {
-            log.e('muteRemote fail', err);
+            log.e('unmuteRemote failed', err);
         });
     }
 }
