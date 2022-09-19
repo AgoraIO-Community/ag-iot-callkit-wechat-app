@@ -116,6 +116,10 @@ function sendEventHelper(eventName, content) {
 
 export function joinChannel(token, channel, agoraUid) {
     log.i('joinChannel Invoked');
+    log.i('channel', channel);
+    log.i('agoraUid', agoraUid);
+    log.i('token', token);
+
     return new Promise((resolve, reject) => {
         rtcClient.join(token, channel, agoraUid, () => {
             log.i('RTC client join channel success');
@@ -165,62 +169,56 @@ export function destroyRtc() {
     log.i('destroyRtc Invoked');
     if (rtcClient) {
         rtcClient.destroy(() => {
-            log.i('RTC client destroy success ');
+            log.i('RTC client destroy success');
             rtcClient = null;
         }, (err) => {
-            log.e('RTC client destroy fail ', err);
+            log.e('RTC client destroy fail', err);
         });
     }
 }
 
-// 启动/停止发送本地音频流
-export function muteLocalVideo(mute) {
+// 启动/停止接收远端音视频流
+export function muteLocal(isMuted) {
     if (!rtcClient) return;
-    log.i('muteLocalVideo Invoked', mute);
+    log.i('muteLocal Invoked', isMuted);
 
-    if (mute) {
-        rtcClient.muteLocal('video');
+    if (isMuted) {
+        rtcClient.muteLocal('all', () => {
+            log.i('muteLocal success');
+            rtcClient = null;
+        }, (err) => {
+            log.e('muteLocal failed', err);
+        });
     } else {
-        rtcClient.unmuteLocal('video');
+        rtcClient.unmuteLocal('all', () => {
+            log.i('muteLocal success');
+            rtcClient = null;
+        }, (err) => {
+            log.e('muteLocal failed', err);
+        });
     }
 }
 
-// 启动/停止发送本地视频流
-export function muteLocalAudio(mute) {
-    if (!rtcClient) return;
-    log.i('muteLocalAudio Invoked', mute);
-
-    if (mute) {
-        rtcClient.muteLocal('audio');
-    } else {
-        rtcClient.unmuteLocal('audio');
-    }
-}
-
-// 启动/停止接收远端视频流
-export function mutePeerVideo(uid, mute) {
+// 启动/停止接收远端音视频流
+export function muteRemote(uid, isMuted) {
     if (!rtcClient) return;
     if (!uid) return;
-    log.i('mutePeerVideo Invoked', uid, mute);
+    log.i('muteRemote Invoked', uid, isMuted);
 
-    const parsedInt = parseInt(uid, 10);
-    if (mute) {
-        rtcClient.mute(parsedInt, 'video');
+    const parsedInt = parseInt(uid);
+    if (isMuted) {
+        rtcClient.mute(parsedInt, 'all', () => {
+            log.i('muteRemote success');
+            rtcClient = null;
+        }, (err) => {
+            log.e('muteRemote failed', err);
+        });
     } else {
-        rtcClient.unmute(parsedInt, 'video');
-    }
-}
-
-// 启动/停止接收远端音频流
-export function mutePeerAudio(uid, mute) {
-    if (!rtcClient) return;
-    if (!uid) return;
-    log.i('mutePeerAudio Invoked', uid, mute);
-
-    const parsedInt = parseInt(uid, 10);
-    if (mute) {
-        rtcClient.mute(parsedInt, 'audio');
-    } else {
-        rtcClient.unmute(parsedInt, 'audio');
+        rtcClient.unmute(parsedInt, 'all', () => {
+            log.i('muteRemote success');
+            rtcClient = null;
+        }, (err) => {
+            log.e('muteRemote fail', err);
+        });
     }
 }

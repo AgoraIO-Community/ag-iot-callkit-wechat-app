@@ -9,7 +9,7 @@
   "scripts": {
     "build": "webpack",
     "rollup": "rollup -c",
-    "lint": "eslint --fix ./callkit",
+    "lint": "eslint --fix ./callkit ./pages",
     "test": "jest"
   },
   "repository": {

@@ -1,16 +1,23 @@
 <view>
-    <view class="box box-column" style="margin-bottom:64px;">
-        <text style="margin-bottom: 16px;">当前账号: {{userData.userId}}</text>
+    <view class="box box-column" style="margin-bottom:32px;">
+        <text style="margin-bottom: 16px;">当前账号: {{userData.username}}</text>
         <text>账号ID: {{userData.clientId}}</text>
     </view>
-    <view class="box flex-center-column" style="margin-bottom:64px;">
-        <input class="input" placeholder="请输入对端设备ID" maxlength="64" bindinput="deviceIdInput" />
-        <button type="default" class="call-device-button" bindtap="callOnClick">呼叫设备</button>
+    <view class="box flex-center-column" style="margin-bottom:32px;">
+        <input class="input" placeholder="请输入对端设备ID" value="{{deviceId}}" maxlength="64" bindinput="deviceIdInput" />
+        <button type="default" class="call-device-button" bindtap="callOnClick" style="margin-bottom:16px;">呼叫</button>
+        <button type="default" class="call-device-button" bindtap="hangupOnClick">挂断</button>
     </view>
 
     <view class="box flex-center-column">
-        <text style="margin-bottom:32px;">当前audio codec: {{currentAudioCodec}}</text>
-        <button type="default" class="call-device-button" style="margin-bottom:32px;" bindtap="setAudioCodecG711u">使用g711u</button>
-        <button type="default" class="call-device-button" style="margin-bottom:32px;" bindtap="setAudioCodecG722">使用g722</button>
+        <text style="margin-bottom:16px;">当前 audio codec</text>
+        <radio-group bindchange="setAudioCodec">
+            <label class="radio">
+              <radio value="g711u" checked="{{currentAudioCodec==='g711u'}}"/>g711u
+            </label>
+            <label class="radio">
+              <radio value="g722" checked="{{currentAudioCodec==='g722'}}"/>g722
+            </label>
+        </radio-group>
     </view>
 </view>

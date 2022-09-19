@@ -32,20 +32,21 @@ import {
     userPublishStream,
     initRtc,
     destroyRtc,
-    muteLocalVideo,
-    muteLocalAudio,
-    mutePeerVideo,
-    mutePeerAudio,
+    muteLocal,
+    muteRemote,
     setAudioCodec,
     getAudioCodec,
 } from './rtc/index';
 import {
-    anonymousLogin,
-    agoraGetToken,
     callDeviceService,
     answerDeviceService,
-    agoraRefreshToken,
 } from './core/agoraService';
+import {
+    authThirdPartyRegister,
+    authThirdPartyLogin,
+    authThirdPartyGetUid,
+    authThirdPartyRemoveAccount,
+} from './core/authService';
 import { base32Encode, log } from './utils/index';
 import eventBus from './utils/event-bus';
 import {
@@ -338,27 +339,18 @@ function getCalleeId(deviceId, productKey) {
     return base32Encode(`${productKey}-${deviceId}`, false);
 }
 
-async function refreshAuthTokenIfExpired(iotClient) {
-    if (iotClient.isAgoraTokenExpired()) {
-        const agoraSession = await agoraRefreshToken(iotClient.refreshToken);
-        iotClient.updateClient({
-            accessToken: agoraSession.access_token,
-            refreshToken: agoraSession.refresh_token,
-            tokenExpiresIn: new Date().getTime() + agoraSession.expires_in * 1000,
-        });
-    }
-}
-
 async function callDevice(deviceId, msg) {
     try {
-        if (currentState !== CALLKIT_STATE_IDLE) return;
+        if (currentState !== CALLKIT_STATE_IDLE) {
+            log.e('状态错误，可能在通话中');
+            throw new Error('In call, cannot call again.');
+        }
         if (!deviceId) {
             log.e('请提供 deviceId');
-            return;
+            throw new Error('Please provide deviceId.');
         }
 
         const iotClient = getIotClient();
-        await refreshAuthTokenIfExpired(iotClient);
         const { inventDeviceName, accessToken, productKey } = iotClient;
         const calleeId = getCalleeId(deviceId, productKey);
 
@@ -373,9 +365,12 @@ async function callDevice(deviceId, msg) {
 
 async function answerDevice() {
     try {
-        if (currentState !== CALLKIT_STATE_INCOMING) return;
+        if (currentState !== CALLKIT_STATE_INCOMING) {
+            log.e('状态错误');
+            throw new Error('Wrong state.');
+        }
+
         const iotClient = getIotClient();
-        await refreshAuthTokenIfExpired(iotClient);
         const { inventDeviceName, accessToken } = iotClient;
 
         return await answerDeviceService(
@@ -393,9 +388,12 @@ async function answerDevice() {
 
 async function hangupDevice() {
     try {
-        if (currentState === CALLKIT_STATE_IDLE) return;
+        if (currentState === CALLKIT_STATE_IDLE) {
+            log.e('状态错误');
+            throw new Error('Wrong state.');
+        }
+
         const iotClient = getIotClient();
-        await refreshAuthTokenIfExpired(iotClient);
         const { inventDeviceName, accessToken } = iotClient;
 
         return await answerDeviceService(
@@ -411,22 +409,13 @@ async function hangupDevice() {
     }
 }
 
-function muteLocalVideoHelper(mute) {
-    muteLocalVideo(mute);
+function muteLocalHelper(isMuted) {
+    muteLocal(isMuted);
 }
 
-function muteLocalAudioHelper(mute) {
-    muteLocalAudio(mute);
-}
-
-function mutePeerVideoHelper(mute) {
+function muteRemoteHelper(isMuted) {
     const { uid } = callkitContext;
-    mutePeerVideo(uid, mute);
-}
-
-function mutePeerAudioHelper(mute) {
-    const { uid } = callkitContext;
-    mutePeerAudio(uid, mute);
+    muteRemote(uid, isMuted);
 }
 
 function setAudioCodecHelper(audioCodec) {
@@ -437,7 +426,7 @@ function getAudioCodecHelper() {
     return getAudioCodec();
 }
 
-async function initAndLogin(config, userId) {
+async function initSdk(config, username, password) {
     try {
         if (!config.APPID) {
             throw new Error('请提供 App ID');
@@ -448,31 +437,28 @@ async function initAndLogin(config, userId) {
         if (!config.PROJECT_ID) {
             throw new Error('请提供 Project ID');
         }
-        if (!userId) {
+        if (!username) {
             throw new Error('用户名不能为空');
         }
-        if (typeof userId !== 'string') {
+        if (typeof username !== 'string') {
             throw new Error('用户名类型需要是字符串');
         }
-        if (userId.length < 6) {
+        if (username.length < 6) {
             throw new Error('用户名需要至少6位');
         }
+        if (!password) {
+            throw new Error('密码不能为空');
+        }
 
-        const username = `${config.PROJECT_ID}-${userId}`;
-        const anonymousRes = await anonymousLogin(username);
-        const agoraTokenRes = await agoraGetToken(username);
-        return await initIot(config, username, anonymousRes.info, agoraTokenRes, handleMqttMessage);
+        const authRes = await authThirdPartyLogin(username, password);
+        return await initIot(config, username, authRes.gyToken, authRes.lsToken, handleMqttMessage);
     } catch (err) {
-        log.e('initAndLogin failed', err);
+        log.e('initSdk failed', err);
         throw err;
     }
 }
 
-function userLogOut() {
-    destroy();
-}
-
-function destroy() {
+function destroySdk() {
     destroyRtc();
     destroyMqtt();
     currentState = CALLKIT_STATE_IDLE;
@@ -481,12 +467,10 @@ function destroy() {
 function getUserData() {
     const iotClient = getIotClient();
     const { username, inventDeviceName } = iotClient;
-    const userId = username.split('-')[1];
-    const clientId = inventDeviceName.split('-')[1];
 
     return {
-        userId,
-        clientId,
+        username,
+        clientId: inventDeviceName,
     };
 }
 
@@ -574,9 +558,11 @@ function mqttDisconnectedEvent(callback) {
 }
 
 class AccountManager {
-    initAndLogin = initAndLogin;
+    initSdk = initSdk;
 
-    userLogOut = userLogOut;
+    destroySdk = destroySdk;
+
+    registerAccount = authThirdPartyRegister;
 
     getUserData = getUserData;
 
@@ -600,13 +586,9 @@ class CallkitManager {
 
     hangupDevice = hangupDevice;
 
-    muteLocalVideo = muteLocalVideoHelper;
+    muteLocal = muteLocalHelper;
 
-    muteLocalAudio = muteLocalAudioHelper;
-
-    mutePeerVideo = mutePeerVideoHelper;
-
-    mutePeerAudio = mutePeerAudioHelper;
+    muteRemote = muteRemoteHelper;
 
     setAudioCodec = setAudioCodecHelper;
 

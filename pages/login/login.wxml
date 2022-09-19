@@ -10,6 +10,11 @@
           <input name="username" placeholder-style='color:#A3D1E0' class="channelInput" 
           value="{{username}}" placeholder='请输入账号' />
         </view>
+        <view class="inputWrapper">
+          <input name="password" placeholder-style='color:#A3D1E0' class="channelInput" 
+          value="{{password}}" placeholder='请输入密码' />
+        </view>
+        <button plain="true" id="register" form-type="submit" class="joinBtn">注册</button>
         <button plain="true" id="login" form-type="submit" class="joinBtn">登陆</button>
       </view>
     </form>

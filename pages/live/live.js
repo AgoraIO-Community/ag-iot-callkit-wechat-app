@@ -61,7 +61,23 @@ Page({
                 wx.switchTab({ url: '/pages/device/device' });
             });
     },
-    
+
+    muteLocal() {
+        CallKitSDK.getCallkitManager().muteLocal(true);
+    },
+
+    unmuteLocal() {
+        CallKitSDK.getCallkitManager().muteLocal(false);
+    },
+
+    muteRemote() {
+        CallKitSDK.getCallkitManager().muteRemote(true);
+    },
+
+    unmuteRemote() {
+        CallKitSDK.getCallkitManager().muteRemote(false);
+    },
+
     statechange(event) {
         log.i('live-pusher :', event);
     },

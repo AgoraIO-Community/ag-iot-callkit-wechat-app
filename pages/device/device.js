@@ -11,8 +11,8 @@ Page({
     },
 
     onShow() {
-        const currentAudioCodec = CallKitSDK.getCallkitManager().getAudioCodec()
-        const userData = CallKitSDK.getAccountManager().getUserData()
+        const currentAudioCodec = CallKitSDK.getCallkitManager().getAudioCodec();
+        const userData = CallKitSDK.getAccountManager().getUserData();
 
         // 获取当前用户信息，显示用户信息
         this.setData({
@@ -77,17 +77,11 @@ Page({
         });
     },
 
-    setAudioCodecG711u() {
-        CallKitSDK.getCallkitManager().setAudioCodec('g711u')
+    setAudioCodec(e) {
+        console.log(e.detail.value);
+        CallKitSDK.getCallkitManager().setAudioCodec(e.detail.value);
         this.setData({
-            currentAudioCodec: 'g711u',
-        });
-    },
-
-    setAudioCodecG722() {
-        CallKitSDK.getCallkitManager().setAudioCodec('g722')
-        this.setData({
-            currentAudioCodec: 'g722',
+            currentAudioCodec: e.detail.value,
         });
     },
 
@@ -109,18 +103,7 @@ Page({
         });
 
         CallKitSDK.getCallkitManager().callDevice(deviceId, attachMsg)
-            .then((res) => {
-            // wx.hideLoading() // DO NOT hide loading here, we still waiting for peer response
-            // wx.showModal({
-            //     title: '正在呼叫...',
-            //     showCancel: false,
-            //     confirmText: '取消呼叫',
-            //     success: (res) => {
-            //         if (res.confirm) {
-            //             this.onHangup()
-            //         }
-            //     }
-            // })
+            .then(() => {
             }).catch((err) => {
                 log.e(err);
                 wx.showToast({
@@ -130,7 +113,7 @@ Page({
             });
     },
 
-    onHangup() {
+    hangupOnClick() {
         CallKitSDK.getCallkitManager().hangupDevice()
             .then((res) => {
                 wx.hideLoading();

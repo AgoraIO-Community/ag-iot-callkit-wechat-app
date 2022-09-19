@@ -30,7 +30,5 @@ const CONFIG_MASTER_SERVER_URL = 'https://app.agoralink-iot-cn.sd-rtn.com';
 const CONFIG_SLAVE_SERVER_URL = 'https://api.agora.io/agoralink/cn/api';
 
 export const agoraBaseUrl = `${CONFIG_SLAVE_SERVER_URL}/call-service/v1`;
-export const agoraBaseAuthUrl = `${CONFIG_SLAVE_SERVER_URL}/oauth`;
 export const granwinServiceBase = CONFIG_MASTER_SERVER_URL;
-export const CLIENT_ID = '9598156a7d15428f83f828a70f40aad5';
-export const CLIENT_SECRET = 'MRbRz1kGau9BZE0gWRh9YMZSYc1Ue06v';
+export const AUTH_THIRD_PARTY_BASE_URL = 'YOUR_AUTH_THIRD_PARTY_ENDPOINT';

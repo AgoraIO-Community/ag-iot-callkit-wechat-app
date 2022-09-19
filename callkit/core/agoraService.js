@@ -26,116 +26,7 @@ import { getIotClient } from './index';
 import { log, myRequest } from '../utils/index';
 import {
     agoraBaseUrl,
-    agoraBaseAuthUrl,
-    CLIENT_ID,
-    CLIENT_SECRET,
 } from '../utils/config';
-
-export async function anonymousLogin(username) {
-    log.i('anonymousLogin Invoked');
-
-    try {
-        const url = `${agoraBaseAuthUrl}/anonymous-login?username=${username}`;
-        const res = await myRequest({
-            url,
-            method: 'post',
-        });
-
-        if (res.code !== 0) {
-            log.e('anonymousLogin ERROR', res);
-            throw new Error(res.msg);
-        }
-
-        log.i('anonymousLogin SUCCESS', res);
-        return res.data;
-    } catch (err) {
-        throw err;
-    }
-}
-
-export async function agoraRegister(username) {
-    log.i('agoraRegister Invoked');
-
-    try {
-        const url = `${agoraBaseAuthUrl}/register`;
-        const res = await myRequest({
-            url,
-            method: 'post',
-            data: {
-                username,
-            },
-        });
-
-        if (res.code !== 0) {
-            log.e('agoraRegister ERROR', res);
-            throw new Error(res.msg);
-        }
-
-        log.i('agoraRegister SUCCESS', res);
-        return res.data;
-    } catch (err) {
-        throw err;
-    }
-}
-
-export async function agoraGetToken(username) {
-    log.i('agoraGetToken Invoked');
-
-    try {
-        const url = `${agoraBaseAuthUrl}/rest-token`;
-        const res = await myRequest({
-            url,
-            method: 'post',
-            data: {
-                grant_type: 'password',
-                username,
-                password: '111111',
-                scope: 'read',
-                client_id: CLIENT_ID,
-                client_secret: CLIENT_SECRET,
-            },
-        });
-
-        if (res.code !== 0) {
-            log.e('agoraGetToken ERROR', res);
-            throw new Error(res.msg);
-        }
-
-        log.i('agoraGetToken SUCCESS', res);
-        return res.data;
-    } catch (err) {
-        throw err;
-    }
-}
-
-export async function agoraRefreshToken(refreshToken) {
-    log.i('agoraRefreshToken Invoked');
-
-    try {
-        const url = `${agoraBaseAuthUrl}/rest-token`;
-        const res = await myRequest({
-            url,
-            method: 'post',
-            data: {
-                grant_type: 'refresh_token',
-                scope: 'read',
-                refresh_token: refreshToken,
-                client_id: CLIENT_ID,
-                client_secret: CLIENT_SECRET,
-            },
-        });
-
-        if (res.code !== 0) {
-            log.e('agoraRefreshToken ERROR', res);
-            throw new Error(res.msg);
-        }
-
-        log.i('agoraRefreshToken SUCCESS', res);
-        return res.data;
-    } catch (err) {
-        throw err;
-    }
-}
 
 export async function callDeviceService(inventDeviceName, deviceMac, attachMsg, token) {
     log.i('callDeviceService Invoked');
@@ -158,7 +49,7 @@ export async function callDeviceService(inventDeviceName, deviceMac, attachMsg, 
             url,
             method: 'post',
             header: {
-                authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
             data: {
                 header,
@@ -199,7 +90,7 @@ export async function answerDeviceService(sessionId, callerId, calleeId, localId
             url,
             method: 'post',
             header: {
-                authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
             data: {
                 header,
