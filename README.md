@@ -19,6 +19,8 @@ MqttJS - https://github.com/mqttjs/MQTT.js
 在小程序的开发设置里，将如下域名配到服务器域名里，其中 request 合法域名区域填入以 https 开头的域名；socket 合法域名区域点入以 wss 开头的域名。
 
 ```
+wss://a1g2ouvmztk85d.ats.iot.cn-north-1.amazonaws.com.cn
+wss://miniapp.agoraio.cn
 https://api.agora.io
 https://app.agoralink-iot-cn.sd-rtn.com
 https://report-ad.agoralab.co
