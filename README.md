@@ -44,6 +44,10 @@ https://uni-webcollector.agora.io
 
 详见[开通声网灵隼功能](https://docs-preprod.agora.io/cn/iot-apaas/enable_agora_link)。
 
+4. 对接自研或第三方账户系统，具体请参考文档 https://docs.agora.io/cn/iot-apaas/third_party_account?platform=All%20Platforms
+
+同时不要忘记添加第三方账户系统域名到小程序的request合法域名中。
+
 ## 如何开始
 
 1. 下载和安装微信开发者工具 https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html
@@ -56,7 +60,6 @@ https://uni-webcollector.agora.io
 
 ```js
 module.exports = {
-    DEBUG: true,
     APPID: 'YOUR_APPID',
     PRODUCT_KEY: 'YOUR_PRODUCT_KEY',
     PROJECT_ID: 'YOUR_PROJECT_ID',
@@ -69,7 +72,15 @@ Project ID：声网的项目 ID。
 
 Product Key：声网灵隼产品 ID。
 
-5. 初始化 SDK 和用户登录。
+5. 更新第三方账号接口地址
+
+在纯呼叫sdk中，前往路径``/callkit/utils/config.js``，其中包含接口地址，请更新 YOUR_AUTH_THIRD_PARTY_ENDPOINT 为您自己部署的第三方接口地址。
+
+```js
+export const AUTH_THIRD_PARTY_BASE_URL = 'YOUR_AUTH_THIRD_PARTY_ENDPOINT';
+```
+
+6. 初始化 SDK 和用户登录。
 
 ```js
 const CallKitSDK = require('../../callkit/index');
@@ -77,7 +88,7 @@ const config = require('../../callkit.config.js');
 
 const username = 'username123'
 
-CallKitSDK.getAccountManager().initAndLogin(config, username)
+CallKitSDK.getAccountManager().initSdk(config, username)
     .then(this.onUserLoginSuccess)
     .catch(this.onLoginFail);
 ```
