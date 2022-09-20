@@ -32,23 +32,9 @@ https://uap-ap-web-4.agoraio.cn
 https://uni-webcollector.agora.io
 ```
 
-3. 开通声网小程序服务
+3. 对接自研或第三方账户系统，具体请参考文档 https://docs.agora.io/cn/iot-apaas/third_party_account?platform=All%20Platforms
 
-    第一次使用微信小程序时，需要参考如下步骤开通服务：
-
-    1. 登录 Agora [控制台](https://console.agora.io/)，点击左侧导航栏的用量图标 ，进入用量页面。
-
-    2. 点击页面左上角聚合用量旁的箭头 ，在下拉框中选择需要开通小程序支持的项目名称。
-
-    3. 在指定项目页面，点击小程序下的分钟数，点击开启小程序服务，然后点击应用。
-
-    4. 开通声网灵隼服务
-
-详见[开通声网灵隼功能](https://docs-preprod.agora.io/cn/iot-apaas/enable_agora_link)。
-
-4. 对接自研或第三方账户系统，具体请参考文档 https://docs.agora.io/cn/iot-apaas/third_party_account?platform=All%20Platforms
-
-同时不要忘记添加第三方账户系统域名到小程序的request合法域名中。
+同时不要忘记添加你的第三方账户系统域名到小程序的request合法域名中。
 
 ## 如何开始
 
