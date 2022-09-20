@@ -23,6 +23,7 @@
  */
 
 import { connect } from '../lib/mqtt/mqtt@4.1.0.min';
+// import { connect } from '../lib/mqtt/mqtt@2.18.8.min';
 import { getInventDeviceNameService } from './granwinService';
 import IoTClient from './IoTClient';
 import aws4Sign from '../aws/index';
