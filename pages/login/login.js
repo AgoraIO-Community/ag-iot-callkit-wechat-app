@@ -8,10 +8,6 @@ Page({
         username: '',
         password: '',
     },
-    onLoad() {
-    },
-    onUnload() {
-    },
     onSubmit(event) {
         if (event.detail.target.id === 'register') {
             this.onRegister(event);

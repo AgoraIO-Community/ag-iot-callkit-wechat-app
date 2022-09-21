@@ -32,6 +32,26 @@ import {
     PACKET_TYPE_G722,
 } from '../utils/const';
 
+/*
+    1. init rtc
+
+    2. join channel
+
+    3. listen to stream-added and stream-removed events
+
+    4. if peer joined and stream-added event fired, subscribe peer and get play url
+
+    5. send play url to live view
+
+    6. publish stream and get push url
+
+    7. send push url to live view
+
+    8. if we hangup, destroy rtc
+
+    9. if peer unsubscribe or leave, stream-removed fired and we destroy rtc
+*/
+
 let rtcClient;
 // default codec is g722
 let currentAudioCodec = PACKET_TYPE_G722;
@@ -77,39 +97,16 @@ export function initRtc(localHangup) {
     });
 }
 
-export function setAudioCodec(audioCode) {
-    log.i('RTC setAudioCodec', audioCode);
-
-    if (audioCode === 'g711u') { // g711u/pcmu/0
-        currentAudioCodec = PACKET_TYPE_PCMU;
-    } else if (audioCode === 'g722') { // g722/9
-        currentAudioCodec = PACKET_TYPE_G722;
-    } else {
-        log.e('RTC audio codec not recognized', audioCode);
-    }
-}
-
-export function getAudioCodec() {
-    log.i('RTC getAudioCodec');
-
-    if (currentAudioCodec === PACKET_TYPE_PCMU) {
-        return 'g711u';
-    } if (currentAudioCodec === PACKET_TYPE_G722) {
-        return 'g722';
-    }
-    return '';
-}
-
-// sometimes live view is not ready and event listener is not ready
-// calling eventBus.emit before eventBus.on will make play url lost
-// use helper to periodically probe event listener is ready
-function sendEventHelper(eventName, content) {
+// sometimes live view is not loaded and the event listener is not ready
+// calling eventBus.emit before eventBus.on will make playUrl lost
+// use sendEventHelper to periodically probe event until live view loaded and event listener ready
+function sendEventHelper(eventName, data) {
     const event = eventBus.find(eventName);
     if (event && event.executes.length !== 0) {
-        eventBus.emit(eventName, content);
+        eventBus.emit(eventName, data);
     } else {
         setTimeout(() => {
-            sendEventHelper(eventName, content);
+            sendEventHelper(eventName, data);
         }, 100);
     }
 }
@@ -175,6 +172,29 @@ export function destroyRtc() {
             log.e('RTC client destroy fail', err);
         });
     }
+}
+
+export function setAudioCodec(audioCode) {
+    log.i('RTC setAudioCodec', audioCode);
+
+    if (audioCode === 'g711u') { // g711u/pcmu/0
+        currentAudioCodec = PACKET_TYPE_PCMU;
+    } else if (audioCode === 'g722') { // g722/9
+        currentAudioCodec = PACKET_TYPE_G722;
+    } else {
+        log.e('RTC audio codec not recognized', audioCode);
+    }
+}
+
+export function getAudioCodec() {
+    log.i('RTC getAudioCodec');
+
+    if (currentAudioCodec === PACKET_TYPE_PCMU) {
+        return 'g711u';
+    } if (currentAudioCodec === PACKET_TYPE_G722) {
+        return 'g722';
+    }
+    return '';
 }
 
 // 启动/停止接收远端音视频流

@@ -19,9 +19,7 @@ Page({
             userData,
             currentAudioCodec,
         });
-    },
 
-    onLoad() {
         // peer 呼叫请求事件
         this.peerRequestEventCallbackUnsubscribe = CallKitSDK.getCallkitManager().peerRequestEventCallback((event) => {
             log.i('peerRequestEventCallback invoked');
@@ -63,7 +61,7 @@ Page({
         });
     },
 
-    onUnload() {
+    onHide() {
         // 退出界面时解除所有事件的绑定
         this.peerRequestEventCallbackUnsubscribe();
         this.peerBusyEventCallbackUnsubscribe();

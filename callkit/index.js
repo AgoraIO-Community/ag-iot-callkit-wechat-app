@@ -204,7 +204,7 @@ function processAwsMessage(jsonState) {
                 currentState = CALLKIT_STATE_IDLE; // 结束通话
                 localHangupAction(); // 本地挂断事件处理
             } else {
-                log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+                log.i('INVALID STATE', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
             }
         } else if (reason === REASON_PEER_HANGUP) {
             if (currentState === CALLKIT_STATE_DIALING) { // 主叫过程中，对端挂断拒绝
@@ -220,7 +220,7 @@ function processAwsMessage(jsonState) {
                 currentState = CALLKIT_STATE_IDLE; // 结束通话
                 peerHangupAction(); // 对端挂断事件处理
             } else {
-                log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+                log.i('INVALID STATE', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
             }
         } else if (reason === REASON_PEER_CALL_TIMEOUT) {
             if (currentState === CALLKIT_STATE_DIALING) { // 主叫过程中，对端超时无响应
@@ -232,7 +232,7 @@ function processAwsMessage(jsonState) {
                 currentState = CALLKIT_STATE_IDLE; // 结束通话
                 localBusyAction(); // 本地无响应事件处理
             } else {
-                log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+                log.i('INVALID STATE', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
             }
         } else if (reason === REASON_LOCAL_CALL_TIMEOUT) {
             if (currentState === CALLKIT_STATE_INCOMING) { // 被叫过程中，被叫无响应
@@ -240,10 +240,10 @@ function processAwsMessage(jsonState) {
                 currentState = CALLKIT_STATE_IDLE; // 结束通话
                 localBusyAction(); // 本地无响应事件处理
             } else {
-                log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+                log.i('INVALID STATE', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
             }
         } else {
-            log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+            log.i('INVALID STATE', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
         }
     } break;
 
@@ -254,7 +254,7 @@ function processAwsMessage(jsonState) {
             setCallkitContext(jsonState);
             localCallingAction(); // 本地呼叫事件处理
         } else {
-            log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+            log.i('INVALID STATE', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
         }
     } break;
 
@@ -265,7 +265,7 @@ function processAwsMessage(jsonState) {
             setCallkitContext(jsonState);
             peerCallingAction(); // 对端呼叫事件处理
         } else {
-            log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+            log.i('INVALID STATE', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
         }
     } break;
 
@@ -280,7 +280,7 @@ function processAwsMessage(jsonState) {
                 setCallkitContext(jsonState);
                 forceHangupAction(); // 从空闲跳到通话状态，可能影子状态卡在通话中，需要强制中断
             } else {
-                log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+                log.i('INVALID STATE', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
             }
         } else if (reason === REASON_LOCAL_ANSWER) {
             if (currentState === CALLKIT_STATE_INCOMING) { // 被叫过程中，本地接听
@@ -292,10 +292,10 @@ function processAwsMessage(jsonState) {
                 setCallkitContext(jsonState);
                 forceHangupAction(); // 从空闲跳到通话状态，可能影子状态卡在通话中，需要强制中断
             } else {
-                log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+                log.i('INVALID STATE', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
             }
         } else {
-            log.e('STATE WRONG', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
+            log.i('INVALID STATE', `remote state: [${targetState}, ${reason}]`, `local state: [${currentState}]`, jsonState);
         }
     } break;
     }
@@ -377,8 +377,8 @@ async function callDevice(deviceId, msg) {
 async function answerDevice() {
     try {
         if (currentState !== CALLKIT_STATE_INCOMING) {
-            log.e('状态错误');
-            throw new Error('Wrong state.');
+            log.e('状态无效');
+            throw new Error('Invalid state.');
         }
 
         const iotClient = getIotClient();
@@ -400,8 +400,8 @@ async function answerDevice() {
 async function hangupDevice() {
     try {
         if (currentState === CALLKIT_STATE_IDLE) {
-            log.e('状态错误');
-            throw new Error('Wrong state.');
+            log.e('状态无效');
+            throw new Error('Invalid state.');
         }
 
         const iotClient = getIotClient();
