@@ -32,9 +32,23 @@ https://uap-ap-web-4.agoraio.cn;
 https://uni-webcollector.agora.io;
 ```
 
-3. 对接自研或第三方账户系统，具体请参考文档 https://docs.agora.io/cn/iot-apaas/third_party_account?platform=All%20Platforms
+3. 开通声网小程序服务
 
-同时不要忘记添加你的第三方账户系统域名到小程序的request合法域名中。
+    第一次使用微信小程序时，需要参考如下步骤开通服务：
+
+    1. 登录 Agora [控制台](https://console.agora.io/)，点击左侧导航栏的用量图标 ，进入用量页面。
+
+    2. 点击页面左上角聚合用量旁的箭头 ，在下拉框中选择需要开通小程序支持的项目名称。
+
+    3. 在指定项目页面，点击小程序下的分钟数，点击开启小程序服务，然后点击应用。
+
+    4. 开通声网灵隼服务
+
+详见[开通声网灵隼功能](https://docs-preprod.agora.io/cn/iot-apaas/enable_agora_link)。
+
+4. 对接自研或第三方账户系统，具体请参考文档 https://docs.agora.io/cn/iot-apaas/third_party_account?platform=All%20Platforms
+
+同时不要忘记添加第三方账户系统域名到小程序的request合法域名中。
 
 ## 如何开始
 
@@ -100,3 +114,13 @@ npm run webpack
 ```
 npm run lint
 ```
+
+## 测试问题
+
+可以通过3种方法测试:
+
+1. 小程序编辑器测试 
+2. USB真机调试 
+3. 上传代码到小程序控制台，生成体验版二维码测试
+
+第二种方法真机调试会出现MQTT一直重连的情况，如果一定需要真机调试，可以前往 /callkit/core/index.js中，切换 MQTT.js 到 2.18.8 版本，然后真机调试就不会出现MQTT重连的情况。但是还是推荐使用4.1.0版本避免一些未知的问题发生。
