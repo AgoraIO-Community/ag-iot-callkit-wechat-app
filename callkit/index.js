@@ -478,10 +478,11 @@ function destroySdk() {
 function getUserData() {
     const iotClient = getIotClient();
     const { username, inventDeviceName } = iotClient;
+    const clientId = inventDeviceName.split('-')[1];
 
     return {
         username,
-        clientId: inventDeviceName,
+        clientId,
     };
 }
 
