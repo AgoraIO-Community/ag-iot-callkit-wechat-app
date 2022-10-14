@@ -8,6 +8,39 @@ Agora RTC - https://docs.agora.io/cn/Video/landing-page?platform=%E5%BE%AE%E4%BF
 
 MqttJS - https://github.com/mqttjs/MQTT.js
 
+## 文件结构
+
+```
+.
+├── aws                                   aws mqtt signature helper
+│   └── index.js
+├── core
+│   ├── IoTClient.js
+│   ├── agoraService.js
+│   ├── authService.js
+│   ├── granwinService.js
+│   └── index.js
+├── index.js                              callkit entry and functions
+├── lib                                   third party dependencies and 
+│   ├── crypto-js
+│   │   ├── core.js
+│   │   ├── hmac-sha256.js
+│   │   ├── hmac.js
+│   │   └── sha256.js
+│   ├── mqtt
+│   │   ├── mqtt@2.18.8.min.js
+│   │   └── mqtt@4.1.0.min.js
+│   └── rtc
+│       └── Agora_Miniapp_SDK_for_WeChat.js
+├── rtc                                   rtc api
+│   └── index.js
+└── utils                                 config and helpers
+    ├── config.js
+    ├── const.js
+    ├── event-bus.js
+    └── index.js
+```
+
 ## 准备工作
 
 1. 获取小程序组件权限

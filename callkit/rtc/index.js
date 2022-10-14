@@ -92,7 +92,7 @@ export function initRtc(localHangup) {
         rtcClient.on('stream-removed', (event) => {
             log.i('RTC stream removed', event);
             // if peer leave channel, local hangup
-            localHangup();
+            if (localHangup) localHangup();
         });
     });
 }
@@ -120,6 +120,7 @@ export function joinChannel(token, channel, agoraUid) {
     return new Promise((resolve, reject) => {
         rtcClient.join(token, channel, agoraUid, () => {
             log.i('RTC client join channel success');
+            muteLocal('video', true);
             resolve();
         }, (err) => {
             log.e(`RTC client join channel failed: ${err.code} ${err.reason}`);
@@ -197,19 +198,20 @@ export function getAudioCodec() {
     return '';
 }
 
+// target could be all, audio or video
 // 启动/停止接收远端音视频流
-export function muteLocal(isMuted) {
+export function muteLocal(target, isMuted) {
     if (!rtcClient) return;
     log.i('muteLocal Invoked', isMuted);
 
     if (isMuted) {
-        rtcClient.muteLocal('all', () => {
+        rtcClient.muteLocal(target, () => {
             log.i('muteLocal success');
         }, (err) => {
             log.e('muteLocal failed', err);
         });
     } else {
-        rtcClient.unmuteLocal('all', () => {
+        rtcClient.unmuteLocal(target, () => {
             log.i('unmuteLocal success');
         }, (err) => {
             log.e('unmuteLocal failed', err);
@@ -218,20 +220,20 @@ export function muteLocal(isMuted) {
 }
 
 // 启动/停止接收远端音视频流
-export function muteRemote(uid, isMuted) {
+export function muteRemote(uid, target, isMuted) {
     if (!rtcClient) return;
     if (!uid) return;
     log.i('muteRemote Invoked', uid, isMuted);
 
     const parsedInt = parseInt(uid);
     if (isMuted) {
-        rtcClient.mute(parsedInt, 'all', () => {
+        rtcClient.mute(parsedInt, target, () => {
             log.i('muteRemote success');
         }, (err) => {
             log.e('muteRemote failed', err);
         });
     } else {
-        rtcClient.unmute(parsedInt, 'all', () => {
+        rtcClient.unmute(parsedInt, target, () => {
             log.i('unmuteRemote success');
         }, (err) => {
             log.e('unmuteRemote failed', err);

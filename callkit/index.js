@@ -145,6 +145,8 @@ function localAcceptAction() {
 
 function localCallingAction() {
     log.i('localCallingAction Invoked');
+    initRtc(forceHangupAction);
+    joinChannel(callkitContext.rtcToken, callkitContext.channelName, callkitContext.uid);
 }
 
 function localHangupAction() {
@@ -420,13 +422,13 @@ async function hangupDevice() {
     }
 }
 
-function muteLocalHelper(isMuted) {
-    muteLocal(isMuted);
+function muteLocalHelper(target, isMuted) {
+    muteLocal(target, isMuted);
 }
 
-function muteRemoteHelper(isMuted) {
+function muteRemoteHelper(target, isMuted) {
     const { uid } = callkitContext;
-    muteRemote(uid, isMuted);
+    muteRemote(uid, target, isMuted);
 }
 
 function setAudioCodecHelper(audioCodec) {

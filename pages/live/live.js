@@ -62,6 +62,14 @@ Page({
             });
     },
 
+    muteLocal() {
+        CallKitSDK.getCallkitManager().muteLocal('video', true);
+    },
+
+    unmuteLocal() {
+        CallKitSDK.getCallkitManager().muteLocal('video', false);
+    },
+
     /**
      * 生命周期函数--监听页面卸载
      */

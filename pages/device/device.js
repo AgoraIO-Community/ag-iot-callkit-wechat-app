@@ -76,14 +76,13 @@ Page({
     },
 
     setAudioCodec(e) {
-        console.log(e.detail.value);
         CallKitSDK.getCallkitManager().setAudioCodec(e.detail.value);
         this.setData({
             currentAudioCodec: e.detail.value,
         });
     },
 
-    callOnClick(event) {
+    callOnClick() {
         const { deviceId } = this.data;
         const attachMsg = 'Hello world from wechat.';
 
@@ -102,6 +101,10 @@ Page({
 
         CallKitSDK.getCallkitManager().callDevice(deviceId, attachMsg)
             .then(() => {
+                wx.hideLoading();
+                wx.navigateTo({
+                    url: '/pages/live/live',
+                });
             }).catch((err) => {
                 log.e(err);
                 wx.showToast({
