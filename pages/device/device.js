@@ -40,16 +40,6 @@ Page({
             });
         });
 
-        // peer 接听事件
-        this.peerAnswerEventCallbackUnsubscribe = CallKitSDK.getCallkitManager().peerAnswerEventCallback((event) => {
-            log.i('peerAnswerEventCallback invoked');
-            wx.hideLoading();
-            // peer 接听后跳转到 live 界面
-            wx.navigateTo({
-                url: '/pages/live/live',
-            });
-        });
-
         // peer 挂断事件
         this.peerHangupEventCallbackUnsubscribe = CallKitSDK.getCallkitManager().peerHangupEventCallback((event) => {
             log.i('peerHangupEventCallback invoked');
@@ -65,7 +55,6 @@ Page({
         // 退出界面时解除所有事件的绑定
         this.peerRequestEventCallbackUnsubscribe();
         this.peerBusyEventCallbackUnsubscribe();
-        this.peerAnswerEventCallbackUnsubscribe();
         this.peerHangupEventCallbackUnsubscribe();
     },
 

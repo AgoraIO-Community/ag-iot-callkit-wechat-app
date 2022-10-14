@@ -118,8 +118,6 @@ function peerCallingAction() {
 
 function peerAcceptAction() {
     log.i('peerAcceptAction Invoked');
-    initRtc(forceHangupAction);
-    joinChannel(callkitContext.rtcToken, callkitContext.channelName, callkitContext.uid);
     eventBus.emit(PEER_ANSWER_EVENT, callkitContext);
 }
 
