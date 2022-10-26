@@ -36,6 +36,10 @@ import {
     muteRemote,
     setAudioCodec,
     getAudioCodec,
+    updatePusherNetStatus,
+    updatePusherStateChange,
+    updatePlayerNetStatus,
+    updatePlayerStateChange,
 } from './rtc/index';
 import {
     callDeviceService,
@@ -44,8 +48,6 @@ import {
 import {
     authThirdPartyRegister,
     authThirdPartyLogin,
-    authThirdPartyGetUid,
-    authThirdPartyRemoveAccount,
 } from './core/authService';
 import { base32Encode, log } from './utils/index';
 import eventBus from './utils/event-bus';
@@ -103,6 +105,7 @@ function setCallkitContext(json) {
     if (json.rtcToken) callkitContext.rtcToken = json.rtcToken;
     if (json.sessionId) callkitContext.sessionId = json.sessionId;
     if (json.uid) callkitContext.uid = json.uid;
+    if (json.peerUid) callkitContext.peerUid = json.peerUid;
 }
 
 function clearCallkitContext() {
@@ -111,7 +114,7 @@ function clearCallkitContext() {
 
 function peerCallingAction() {
     log.i('peerCallingAction Invoked');
-    initRtc(forceHangupAction);
+    initRtc(callkitContext);
     joinChannel(callkitContext.rtcToken, callkitContext.channelName, callkitContext.uid);
     eventBus.emit(PEER_REQUEST_EVENT, callkitContext);
 }
@@ -137,13 +140,13 @@ function peerBusyAction() {
 
 function localAcceptAction() {
     log.i('localAcceptAction Invoked');
-    initRtc(forceHangupAction);
+    initRtc(callkitContext);
     joinChannel(callkitContext.rtcToken, callkitContext.channelName, callkitContext.uid);
 }
 
 function localCallingAction() {
     log.i('localCallingAction Invoked');
-    initRtc(forceHangupAction);
+    initRtc(callkitContext);
     joinChannel(callkitContext.rtcToken, callkitContext.channelName, callkitContext.uid);
 }
 
@@ -569,15 +572,46 @@ function mqttDisconnectedEvent(callback) {
     };
 }
 
+function reportPusherNetStatus(e) {
+    updatePusherNetStatus(e);
+}
+
+function reportPusherStateChange(e) {
+    updatePusherStateChange(e);
+}
+
+function reportPlayerNetStatus(e) {
+    const { peerUid } = callkitContext;
+    updatePlayerNetStatus(peerUid, e);
+}
+
+function reportPlayerStateChange(e) {
+    const { peerUid } = callkitContext;
+    updatePlayerStateChange(peerUid, e);
+}
+
+// 账号管理类
 class AccountManager {
+    // 初始化SDK，和登录
+    // 参数: Object config, String username, String password
+    // return: promise
     initSdk = initSdk;
 
+    // 销毁SDK
+    // 参数: none
     destroySdk = destroySdk;
 
+    // 在第三方AUTH平台注册账号
+    // 参数: String username, String password
+    // return: promise
     registerAccount = authThirdPartyRegister;
 
+    // 获取用户信息
+    // return: 返回当前用户对象
     getUserData = getUserData;
 
+    // 用户意外退出的事件回调
+    // callback: 返回用户对象
     userSessionEndEventCallback = userSessionEndEventCallback;
 }
 
@@ -589,36 +623,82 @@ export function getAccountManager() {
     return accountManager;
 }
 
+// 呼叫管理类
 class CallkitManager {
+    // 本地用户发起推流
+    // return: promise，返回推流地址 playUrl
     userPublishStream = userPublishStream;
 
+    // 呼叫请求
+    // 参数: String deviceId, String attachMsg
+    // return: promise
     callDevice = callDevice;
 
+    // 接听请求
+    // 参数: none
+    // return: promise
     answerDevice = answerDevice;
 
+    // 挂断请求
+    // 参数: none
+    // return: promise
     hangupDevice = hangupDevice;
 
+    // 关闭本地音视频流
+    // 参数: String target, Boolean enabled
     muteLocal = muteLocalHelper;
 
+    // 关闭对端音视频流
+    // 参数: String target, Boolean enabled
     muteRemote = muteRemoteHelper;
 
+    // 设置音频codec
+    // 参数: String audioCodec
     setAudioCodec = setAudioCodecHelper;
 
+    // 获取音频codec
+    // return: 当前音频codec
     getAudioCodec = getAudioCodecHelper;
 
+    // 对端加入频道的事件回调
+    // callback: 返回对端播放地址
+    // return: 移除本事件监听的函数
     peerStreamAddedEventCallback = peerStreamAddedEventCallback;
 
+    // 对端挂断的事件回调
+    // return: 移除本事件监听的函数
     peerHangupEventCallback = peerHangupEventCallback;
 
+    // 对端繁忙的事件回调
+    // callback: 返回一个对象 { String attachMsg }
+    // return: 移除本事件监听的函数
     peerBusyEventCallback = peerBusyEventCallback;
 
+    // 对端接听的事件回调
+    // callback: 无
+    // return: 移除本事件监听的函数
     peerAnswerEventCallback = peerAnswerEventCallback;
 
+    // 对端呼叫的事件回调
+    // callback: 无
+    // return: 移除本事件监听的函数
     peerRequestEventCallback = peerRequestEventCallback;
 
+    // mqtt重连的事件回调
+    // callback: 无
     mqttReconnectedEvent = mqttReconnectedEvent;
 
+    // mqtt断连的事件回调
+    // callback: 无
     mqttDisconnectedEvent = mqttDisconnectedEvent;
+
+    reportPusherNetStatus = reportPusherNetStatus;
+
+    reportPusherStateChange = reportPusherStateChange;
+
+    reportPlayerNetStatus = reportPlayerNetStatus;
+
+    reportPlayerStateChange = reportPlayerStateChange;
 }
 
 export function getCallkitManager() {

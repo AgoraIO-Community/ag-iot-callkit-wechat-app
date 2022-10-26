@@ -56,7 +56,7 @@ let rtcClient;
 // default codec is g722
 let currentAudioCodec = PACKET_TYPE_G722;
 
-export function initRtc(localHangup) {
+export function initRtc(callkitContext) {
     log.i('initRtc Invoked');
     return new Promise((resolve, reject) => {
         if (rtcClient) {
@@ -79,20 +79,24 @@ export function initRtc(localHangup) {
             reject(err);
         });
 
-        rtcClient.on('stream-added', (event) => {
-            log.i('RTC stream-added', event);
-            rtcClient.subscribe(event.uid, (url) => {
-                log.i('RTC subscribe succcess');
-                sendEventHelper(PEER_STREAM_ADDED_EVENT, url);
-            }, (err) => {
-                log.e('RTC subscribe err', err);
-            });
+        rtcClient.on('stream-added', (user) => {
+            log.i('RTC stream-added', user);
+            // 多呼一的情况下，其他用户加入频道，避免订阅其他用户，纯呼叫只订阅设备端。
+            if (user.uid?.toString() === callkitContext.peerUid?.toString()
+                || user.uid?.toString() === callkitContext.uid?.toString()) {
+                log.i('Device joined channel.');
+                rtcClient.subscribe(user.uid, (url) => {
+                    log.i('RTC subscribe succcess');
+                    sendEventHelper(PEER_STREAM_ADDED_EVENT, url);
+                }, (err) => {
+                    log.e('RTC subscribe err', err);
+                });
+            }
         });
 
-        rtcClient.on('stream-removed', (event) => {
-            log.i('RTC stream removed', event);
-            // if peer leave channel, local hangup
-            if (localHangup) localHangup();
+        rtcClient.on('stream-removed', (user) => {
+            log.i('RTC stream removed', user);
+            // peer left channel
         });
     });
 }
@@ -120,6 +124,7 @@ export function joinChannel(token, channel, agoraUid) {
     return new Promise((resolve, reject) => {
         rtcClient.join(token, channel, agoraUid, () => {
             log.i('RTC client join channel success');
+            // mute local video as default
             muteLocal('video', true);
             resolve();
         }, (err) => {
@@ -239,4 +244,20 @@ export function muteRemote(uid, target, isMuted) {
             log.e('unmuteRemote failed', err);
         });
     }
+}
+
+export function updatePusherNetStatus(e) {
+    rtcClient.updatePusherNetStatus(e.detail);
+}
+
+export function updatePusherStateChange(e) {
+    rtcClient.updatePusherStateChange(e.detail);
+}
+
+export function updatePlayerNetStatus(uid, e) {
+    rtcClient.updatePlayerNetStatus(uid, e.detail);
+}
+
+export function updatePlayerStateChange(uid, e) {
+    rtcClient.updatePlayerStateChange(uid, e.detail);
 }
