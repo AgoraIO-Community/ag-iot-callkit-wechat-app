@@ -29,33 +29,11 @@ Page({
                 url: `/pages/answer/answer?attachMsg=${attachMsg}`,
             });
         });
-
-        // peer 正在忙事件
-        this.peerBusyEventCallbackUnsubscribe = CallKitSDK.getCallkitManager().peerBusyEventCallback((event) => {
-            log.i('peerBusyEventCallback invoked');
-            wx.showToast({
-                title: '对方正忙',
-                icon: 'error',
-                mask: true,
-            });
-        });
-
-        // peer 挂断事件
-        this.peerHangupEventCallbackUnsubscribe = CallKitSDK.getCallkitManager().peerHangupEventCallback((event) => {
-            log.i('peerHangupEventCallback invoked');
-            wx.showToast({
-                title: '对方挂断',
-                icon: 'error',
-                mask: true,
-            });
-        });
     },
 
     onHide() {
         // 退出界面时解除所有事件的绑定
         this.peerRequestEventCallbackUnsubscribe();
-        this.peerBusyEventCallbackUnsubscribe();
-        this.peerHangupEventCallbackUnsubscribe();
     },
 
     deviceIdInput(e) {
@@ -100,15 +78,6 @@ Page({
                     title: '呼叫设备失败',
                     icon: 'error',
                 });
-            });
-    },
-
-    hangupOnClick() {
-        CallKitSDK.getCallkitManager().hangupDevice()
-            .then((res) => {
-                wx.hideLoading();
-            }).catch((err) => {
-                wx.hideLoading();
             });
     },
 });

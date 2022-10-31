@@ -49,6 +49,18 @@ Page({
                 wx.switchTab({ url: '/pages/device/device' });
             }, 1500);
         });
+
+        // peer 正在忙事件
+        this.peerBusyEventCallbackUnsubscribe = CallKitSDK.getCallkitManager().peerBusyEventCallback((event) => {
+            log.i('peerBusyEventCallback invoked');
+            wx.showToast({
+                title: '对方正忙',
+                duration: 1500,
+            });
+            setTimeout(() => {
+                wx.switchTab({ url: '/pages/device/device' });
+            }, 1500);
+        });
     },
 
     // 挂断
@@ -70,6 +82,22 @@ Page({
         CallKitSDK.getCallkitManager().muteLocal('video', false);
     },
 
+    // playerStateChange(e) {
+    //     CallKitSDK.getCallkitManager().reportPlayerStateChange(e);
+    // },
+
+    // playerNetStatus(e) {
+    //     CallKitSDK.getCallkitManager().reportPlayerNetStatus(e);
+    // },
+
+    // pusherStateChange(e) {
+    //     CallKitSDK.getCallkitManager().reportPusherStateChange(e);
+    // },
+
+    // pusherNetStatus(e) {
+    //     CallKitSDK.getCallkitManager().reportPusherNetStatus(e);
+    // },
+
     /**
      * 生命周期函数--监听页面卸载
      */
@@ -79,5 +107,6 @@ Page({
         // 释放监听事件
         this.peerStreamAddedEventCallbackUnsubscribe();
         this.peerHangupEventCallbackUnsubscribe();
+        this.peerBusyEventCallbackUnsubscribe();
     },
 });

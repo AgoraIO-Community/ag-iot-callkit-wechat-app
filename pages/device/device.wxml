@@ -6,7 +6,6 @@
     <view class="box flex-center-column" style="margin-bottom:32px;">
         <input class="input" placeholder="请输入对端设备ID" value="{{deviceId}}" maxlength="64" bindinput="deviceIdInput" />
         <button type="default" class="call-device-button" bindtap="callOnClick" style="margin-bottom:16px;">呼叫</button>
-        <button type="default" class="call-device-button" bindtap="hangupOnClick">挂断</button>
     </view>
 
     <view class="box flex-center-column">
