@@ -457,9 +457,6 @@ async function initSdk(config, username, password) {
         if (typeof username !== 'string') {
             throw new Error('用户名类型需要是字符串');
         }
-        if (username.length < 6) {
-            throw new Error('用户名需要至少6位');
-        }
         if (!password) {
             throw new Error('密码不能为空');
         }
